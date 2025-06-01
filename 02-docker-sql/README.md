@@ -1,3 +1,8 @@
+# Introduction 
+
+This folder demonstrates how to extract data from external sources and load it into a PostgreSQL database. It utilizes Docker Compose to containerize two key services: a PostgreSQL database and pgAdmin, a graphical interface for executing SQL queries and managing the database. The project showcases the setup of a data pipeline that includes data ingestion, database initialization, and SQL-based data manipulation using pgAdmin as the primary interface.
+
+
 # 1. Install Docker & Docker Compose
 
 - Skip if already installed
