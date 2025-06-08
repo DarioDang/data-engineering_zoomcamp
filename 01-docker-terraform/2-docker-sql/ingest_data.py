@@ -17,9 +17,11 @@ def main(params):
     parquet_name = 'output.parquet'
     os.system(f"wget {url} -O {parquet_name}")
     engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
+    with engine.connect() as conn:
+        conn.execute("CREATE SCHEMA IF NOT EXISTS nyc_trip_taxi;")
     df = pd.read_parquet(parquet_name)
-    df.head(n=0).to_sql(name= table_name, con = engine, if_exists = 'replace')
-    df.to_sql(name=table_name, con = engine, if_exists = 'append')
+    df.head(n=0).to_sql(name= table_name, con = engine, schema= 'nyc_trip_taxi' ,if_exists = 'replace')
+    df.to_sql(name=table_name, con = engine, schema= 'nyc_trip_taxi',  if_exists = 'append')
 
 
 if __name__ == '__main__':
