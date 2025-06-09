@@ -21,35 +21,33 @@ def main(params):
     host = params.host
     port = params.port
     db = params.db
-    table_name = params.table_name
-    base_url = params.url  # e.g., "https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-"
-    
+    color = params.color.lower()
+    year = params.year
+    table_name = f"{color}_taxi_data"
+    base_url = f"https://d37ci6vzurychx.cloudfront.net/trip-data/{color}_tripdata_{year}-"
+
     engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
     
-    # Ensure the target schema exists
     with engine.connect() as conn:
         conn.execute("CREATE SCHEMA IF NOT EXISTS nyc_trip_taxi;")
+        conn.execute("CREATE SCHEMA IF NOT EXISTS dbt_production;")
     
-    # Loop over months 01 to 12:
     for month in [f'{i:02d}' for i in range(1, 4)]:
         file_url = f"{base_url}{month}.parquet"
         print(f"Ingesting data for month: {month} from {file_url}")
-        # For the first month, if_exists='replace', else 'append'
-        if month == '01':
-            ingestion_mode = 'replace'
-        else:
-            ingestion_mode = 'append'
+        ingestion_mode = 'replace' if month == '01' else 'append'
         ingest_month(engine, table_name, file_url, 'nyc_trip_taxi', ingestion_mode)
 
+
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Ingest monthly data into PostgreSQL')
+    parser = argparse.ArgumentParser(description='Ingest NYC Taxi data into PostgreSQL')
     parser.add_argument('--user', help='User name for PostgreSQL')
     parser.add_argument('--password', help='Password for PostgreSQL')
     parser.add_argument('--host', help='Host for PostgreSQL')
     parser.add_argument('--port', help='Port for PostgreSQL')
     parser.add_argument('--db', help='Database name for PostgreSQL')
-    parser.add_argument('--table_name', help='Table name for PostgreSQL')
-    parser.add_argument('--url', help='Base URL of the parquet file to ingest (without month and .parquet)')
+    parser.add_argument('--color', help='Taxi color: green or yellow')
+    parser.add_argument('--year', help='Year to ingest data for, e.g., 2021')
     args = parser.parse_args()
     main(args)
 
@@ -63,6 +61,14 @@ if __name__ == '__main__':
 #   --table_name=green_taxi_data \
 #   --url="https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-"
 
-
+# How to run
+#python ingest_data_automatically.py \
+#  --user=root \
+#  --password=root \
+#  --host=localhost \
+#  --port=5433 \
+#  --db=ny_taxi \
+#  --color=green \
+#  --year=2021
 
 
