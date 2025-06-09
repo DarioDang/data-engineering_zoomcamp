@@ -51,15 +51,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     main(args)
 
-# How to run
-# python ingest_data_automatically.py \
-#   --user=root \
-#   --password=root \
-#   --host=localhost \
-#   --port=5433 \
-#   --db=ny_taxi \
-#   --table_name=green_taxi_data \
-#   --url="https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_2021-"
+
 
 # How to run
 #python ingest_data_automatically.py \
